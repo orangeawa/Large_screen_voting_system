@@ -1,0 +1,17 @@
+{
+  "name": "judge-scoring-system",
+  "version": "1.0.0",
+  "description": "多人协作评委评分系统",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^4.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}

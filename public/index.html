@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评委评分系统 - 入口</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #87CEEB;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #0066cc;
+            margin-bottom: 30px;
+        }
+        
+        .role-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .role-card {
+            background-color: #e6f7ff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .role-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .role-card h2 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        
+        .role-card p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .judge-selection {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .judge-selection.active {
+            display: block;
+        }
+        
+        .judge-selection select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #004c99;
+        }
+        
+        .btn-display {
+            background-color: #4CAF50;
+        }
+        
+        .btn-display:hover {
+            background-color: #388E3C;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>评委评分系统</h1>
+        
+        <div class="role-selection">
+            <div class="role-card">
+                <h2>评委入口</h2>
+                <p>如果您是评委，请选择您的评委编号并进入评分界面</p>
+                <div class="judge-selection">
+                    <select id="judge-id">
+                        <option value="1">一号评委</option>
+                        <option value="2">二号评委</option>
+                        <option value="3">三号评委</option>
+                        <option value="4">四号评委</option>
+                        <option value="5">五号评委</option>
+                        <option value="6">六号评委</option>
+                    </select>
+                </div>
+                <button class="btn" id="show-judge-selection">我是评委</button>
+                <a href="#" class="btn" id="enter-judge" style="display: none;">进入评分</a>
+            </div>
+            
+            <div class="role-card">
+                <h2>大屏显示</h2>
+                <p>用于显示所有评委的评分和最终结果</p>
+                <a href="display.html" class="btn btn-display">进入大屏</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const showJudgeSelectionBtn = document.getElementById('show-judge-selection');
+            const judgeSelection = document.querySelector('.judge-selection');
+            const enterJudgeBtn = document.getElementById('enter-judge');
+            const judgeIdSelect = document.getElementById('judge-id');
+            
+            showJudgeSelectionBtn.addEventListener('click', function() {
+                judgeSelection.classList.add('active');
+                showJudgeSelectionBtn.style.display = 'none';
+                enterJudgeBtn.style.display = 'inline-block';
+            });
+            
+            enterJudgeBtn.addEventListener('click', function() {
+                const judgeId = judgeIdSelect.value;
+                this.href = `judge.html?id=${judgeId}`;
+            });
+        });
+    </script>
+</body>
+</html>

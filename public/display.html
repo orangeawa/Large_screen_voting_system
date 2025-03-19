@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评分大屏显示</title>
+    <link rel="stylesheet" href="css/display.css">
+</head>
+<body>
+    <div class="container">
+        <h1>评委评分系统</h1>
+        
+        <div class="score-display">
+            <div class="current-player">
+                <h2>当前选手: <span id="player-number">01号选手</span></h2>
+                <h3>主题: <span id="player-theme">自主命题讲解</span></h3>
+            </div>
+            <div class="average-score">
+                <h2>平均分</h2>
+                <div id="final-score">0.00</div>
+            </div>
+        </div>
+        
+        <div class="judges-panel">
+            <!-- 动态生成评委面板 -->
+        </div>
+        
+        <div class="controls">
+            <button id="calculate">计算得分</button>
+            <button id="reset">重置</button>
+            <button id="next-player">下一位选手</button>
+        </div>
+    </div>
+
+    <script src="socket.io/socket.io.js"></script>
+    <script src="js/display.js"></script>
+</body>
+</html>
