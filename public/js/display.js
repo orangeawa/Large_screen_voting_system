@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 监听分数重置事件
-    socket.on('resetScores', () => {
+    socket.on('resetScores', (data) => {
         document.querySelectorAll('.judge .score').forEach(scoreEl => {
             scoreEl.textContent = '0.00';
         });
@@ -109,6 +109,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         finalScoreEl.textContent = '0.00';
+        
+        // 如果是重置所有选手得分，则更新选手编号
+        if (data && data.resetAll) {
+            playerNumberEl.textContent = data.playerNumber + '号选手';
+            playerThemeEl.textContent = data.playerTheme;
+            
+            // 触发一个自定义事件，通知all-scores.js刷新数据
+            const resetAllEvent = new CustomEvent('resetAllScores');
+            window.dispatchEvent(resetAllEvent);
+        }
     });
     
     // 监听下一位选手事件
@@ -127,20 +137,24 @@ document.addEventListener('DOMContentLoaded', function() {
         finalScoreEl.textContent = '0.00';
     });
     
-    // 监听重置选手事件
-    socket.on('resetPlayer', (data) => {
+    // 监听切换选手事件
+    socket.on('switchPlayer', (data) => {
         playerNumberEl.textContent = data.playerNumber + '号选手';
         playerThemeEl.textContent = data.playerTheme;
         
-        document.querySelectorAll('.judge .score').forEach(scoreEl => {
-            scoreEl.textContent = '0.00';
-        });
-        
-        document.querySelectorAll('.judge').forEach(judge => {
-            judge.classList.remove('highest', 'lowest');
-        });
-        
-        finalScoreEl.textContent = '0.00';
+        if (data.hasScore) {
+            finalScoreEl.textContent = data.finalScore;
+        } else {
+            document.querySelectorAll('.judge .score').forEach(scoreEl => {
+                scoreEl.textContent = '0.00';
+            });
+            
+            document.querySelectorAll('.judge').forEach(judge => {
+                judge.classList.remove('highest', 'lowest');
+            });
+            
+            finalScoreEl.textContent = '0.00';
+        }
     });
     
     // 监听评委数量更新事件
@@ -162,18 +176,37 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('计算得分出错:', error);
+            alert('计算得分出错: ' + error.message);
         });
     });
     
-    // 重置按钮
+    // 重置按钮 - 修改为支持重置所有选手得分
     resetBtn.addEventListener('click', function() {
-        fetch('/api/reset', {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .catch(error => {
-            console.error('重置分数出错:', error);
-        });
+        if (confirm('是否重置所有选手的得分并将当前选手重置为01号？')) {
+            fetch('/api/reset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ resetAll: true })
+            })
+            .then(response => response.json())
+            .catch(error => {
+                console.error('重置分数出错:', error);
+            });
+        } else {
+            fetch('/api/reset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ resetAll: false })
+            })
+            .then(response => response.json())
+            .catch(error => {
+                console.error('重置分数出错:', error);
+            });
+        }
     });
     
     // 下一位选手按钮
@@ -187,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // 打开重置选手编号模态框
+    // 打开重置选手编号模态框 - 修改为切换选手编号
     resetPlayerBtn.addEventListener('click', function() {
         resetPlayerModal.style.display = 'block';
     });
@@ -197,9 +230,14 @@ document.addEventListener('DOMContentLoaded', function() {
         resetPlayerModal.style.display = 'none';
     });
 
-    // 确认重置选手编号
+    // 确认重置选手编号 - 修改为切换选手编号
     confirmResetPlayerBtn.addEventListener('click', function() {
         const newPlayerNumber = newPlayerNumberInput.value;
+        
+        if (!newPlayerNumber || parseInt(newPlayerNumber) < 1) {
+            alert('请输入有效的选手编号！');
+            return;
+        }
         
         fetch('/api/reset-player-number', {
             method: 'POST',
@@ -211,9 +249,27 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             resetPlayerModal.style.display = 'none';
+            
+            // 立即更新界面显示
+            playerNumberEl.textContent = data.playerNumber + '号选手';
+            
+            if (data.hasScore) {
+                finalScoreEl.textContent = data.finalScore;
+            } else {
+                // 清空所有评委分数显示
+                document.querySelectorAll('.judge .score').forEach(scoreEl => {
+                    scoreEl.textContent = '0.00';
+                });
+                
+                document.querySelectorAll('.judge').forEach(judge => {
+                    judge.classList.remove('highest', 'lowest');
+                });
+                
+                finalScoreEl.textContent = '0.00';
+            }
         })
         .catch(error => {
-            console.error('重置选手编号出错:', error);
+            console.error('切换选手编号出错:', error);
         });
     });
     
@@ -232,8 +288,8 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmJudgeCountBtn.addEventListener('click', function() {
         const newJudgeCount = parseInt(judgeCountInput.value);
         
-        if (newJudgeCount < 3 || newJudgeCount > 9) {
-            alert('评委数量必须在3-9之间');
+        if (newJudgeCount < 1 || newJudgeCount > 12) {
+            alert('评委数量必须在1-12之间');
             return;
         }
         
@@ -252,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('设置评委数量出错:', error);
         });
     });
-    
+
     // 点击模态框外部关闭
     window.addEventListener('click', function(event) {
         if (event.target === resetPlayerModal) {

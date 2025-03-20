@@ -47,6 +47,18 @@ document.addEventListener('DOMContentLoaded', function() {
         loadAllScores();
     });
     
+    // 监听重置所有选手得分事件
+    window.addEventListener('resetAllScores', function() {
+        loadAllScores();
+    });
+
+    // 监听来自服务器的重置所有选手得分事件
+    socket.on('resetScores', (data) => {
+        if (data && data.resetAll) {
+            loadAllScores();
+        }
+    });
+    
     // 导出成绩
     exportScoresBtn.addEventListener('click', function() {
         fetch('/api/all-scores')

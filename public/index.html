@@ -148,6 +148,7 @@
     </div>
 </div>
     
+    <script src="socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const showJudgeSelectionBtn = document.getElementById('show-judge-selection');
@@ -155,19 +156,31 @@
             const enterJudgeBtn = document.getElementById('enter-judge');
             const judgeIdSelect = document.getElementById('judge-id');
             
+            // 连接Socket.io
+            const socket = io();
+            
             // 获取当前评委数量
-        fetch('/api/state')
-            .then(response => response.json())
-            .then(state => {
-                // 更新评委选择下拉框
+            fetch('/api/state')
+                .then(response => response.json())
+                .then(state => {
+                    updateJudgeOptions(state.judgeCount || 6);
+                });
+            
+            // 监听评委数量更新事件
+            socket.on('judgeCountUpdate', (data) => {
+                updateJudgeOptions(data.judgeCount);
+            });
+            
+            // 更新评委选项函数
+            function updateJudgeOptions(count) {
                 judgeIdSelect.innerHTML = '';
-                for (let i = 1; i <= (state.judgeCount || 6); i++) {
+                for (let i = 1; i <= count; i++) {
                     const option = document.createElement('option');
                     option.value = i;
                     option.textContent = i + '号评委';
                     judgeIdSelect.appendChild(option);
                 }
-            });
+            }
 
             showJudgeSelectionBtn.addEventListener('click', function() {
                 judgeSelection.classList.add('active');

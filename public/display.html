@@ -25,26 +25,27 @@
             <!-- 动态生成评委面板 -->
         </div>
         
+        <!-- 修改按钮文本 -->
         <div class="controls">
             <button id="calculate">计算得分</button>
             <button id="reset">重置</button>
             <button id="next-player">下一位选手</button>
-            <button id="reset-player">重置选手编号</button>
+            <button id="reset-player">切换选手编号</button>
             <button id="set-judge-count">设置评委数量</button>
             <a href="all-scores.html" class="btn btn-all-scores">查看所有选手得分</a>
         </div>
-    </div>
-
-    <!-- 添加重置选手编号的模态框 -->
-    <div id="reset-player-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>重置选手编号</h2>
-            <div class="input-group">
-                <label for="new-player-number">新选手编号:</label>
-                <input type="number" id="new-player-number" min="1" value="1">
+        
+        <!-- 修改模态框标题 -->
+        <div id="reset-player-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>切换选手编号</h2>
+                <div class="input-group">
+                    <label for="new-player-number">选手编号:</label>
+                    <input type="number" id="new-player-number" min="1" value="1">
+                </div>
+                <button id="confirm-reset-player">确认</button>
             </div>
-            <button id="confirm-reset-player">确认</button>
         </div>
     </div>
 
@@ -54,8 +55,8 @@
             <span class="close-judge-modal">&times;</span>
             <h2>设置评委数量</h2>
             <div class="input-group">
-                <label for="judge-count-input">评委数量 (3-9):</label>
-                <input type="number" id="judge-count-input" min="3" max="9" value="6">
+                <label for="judge-count-input">评委数量 (1-12):</label>
+                <input type="number" id="judge-count-input" min="1" max="12" value="6">
             </div>
             <button id="confirm-judge-count">确认</button>
         </div>
