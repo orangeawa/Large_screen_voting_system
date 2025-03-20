@@ -12,7 +12,9 @@ let currentState = {
   currentPlayer: 1,
   playerTheme: '自主命题讲解',
   scores: {},  // 格式: {judgeId: score}
-  finalScore: 0
+  finalScore: 0,
+  judgeCount: 6,  // 默认评委数量
+  allPlayerScores: {}  // 格式: {playerNumber: finalScore}
 };
 
 // 提供静态文件
@@ -52,13 +54,17 @@ app.post('/api/calculate', (req, res) => {
   
   scores.forEach(score => {
     if (score !== maxScore && score !== minScore) {
-      sum += score;
+      sum += parseFloat(score);
       count++;
     }
   });
   
   const average = count > 0 ? sum / count : 0;
   currentState.finalScore = average.toFixed(2);
+  
+  // 保存当前选手的最终得分
+  const playerNumber = currentState.currentPlayer.toString().padStart(2, '0');
+  currentState.allPlayerScores[playerNumber] = currentState.finalScore;
   
   // 广播最终得分
   io.emit('finalScoreUpdate', { 
@@ -93,6 +99,44 @@ app.post('/api/next-player', (req, res) => {
   });
   
   res.json({ success: true });
+});
+
+// 重置选手编号
+app.post('/api/reset-player-number', (req, res) => {
+  const { playerNumber } = req.body;
+  currentState.currentPlayer = parseInt(playerNumber) || 1;
+  currentState.scores = {};
+  currentState.finalScore = 0;
+  
+  // 广播重置选手
+  io.emit('resetPlayer', { 
+    playerNumber: currentState.currentPlayer.toString().padStart(2, '0'),
+    playerTheme: currentState.playerTheme
+  });
+  
+  res.json({ success: true });
+});
+
+// 设置评委数量
+app.post('/api/set-judge-count', (req, res) => {
+  const { judgeCount } = req.body;
+  currentState.judgeCount = parseInt(judgeCount) || 6;
+  
+  // 清理超出评委数量的分数
+  Object.keys(currentState.scores).forEach(judgeId => {
+    if (parseInt(judgeId) > currentState.judgeCount) {
+      delete currentState.scores[judgeId];
+    }
+  });
+  
+  // 广播评委数量更新
+  io.emit('judgeCountUpdate', { judgeCount: currentState.judgeCount });
+  res.json({ success: true });
+});
+
+// 获取所有选手得分
+app.get('/api/all-scores', (req, res) => {
+  res.json(currentState.allPlayerScores);
 });
 
 // Socket.io连接处理

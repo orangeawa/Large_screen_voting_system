@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>所有选手得分</title>
+    <link rel="stylesheet" href="css/all-scores.css">
+</head>
+<body>
+    <div class="container">
+        <h1>所有选手最终得分</h1>
+        
+        <div class="scores-table-container">
+            <table class="scores-table">
+                <thead>
+                    <tr>
+                        <th>选手编号</th>
+                        <th>最终得分</th>
+                    </tr>
+                </thead>
+                <tbody id="scores-body">
+                    <!-- 动态生成选手得分 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="controls">
+            <a href="display.html" class="btn">返回大屏</a>
+            <button id="export-scores" class="btn">导出成绩</button>
+        </div>
+    </div>
+
+    <script src="socket.io/socket.io.js"></script>
+    <script src="js/all-scores.js"></script>
+</body>
+</html>

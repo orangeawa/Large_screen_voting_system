@@ -109,37 +109,44 @@
         .btn-display:hover {
             background-color: #388E3C;
         }
+        .btn-scores {
+            background-color: #607D8B;
+        }
+    
+        .btn-scores:hover {
+            background-color: #455A64;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>评委评分系统</h1>
         
-        <div class="role-selection">
-            <div class="role-card">
-                <h2>评委入口</h2>
-                <p>如果您是评委，请选择您的评委编号并进入评分界面</p>
-                <div class="judge-selection">
-                    <select id="judge-id">
-                        <option value="1">一号评委</option>
-                        <option value="2">二号评委</option>
-                        <option value="3">三号评委</option>
-                        <option value="4">四号评委</option>
-                        <option value="5">五号评委</option>
-                        <option value="6">六号评委</option>
-                    </select>
-                </div>
-                <button class="btn" id="show-judge-selection">我是评委</button>
-                <a href="#" class="btn" id="enter-judge" style="display: none;">进入评分</a>
-            </div>
-            
-            <div class="role-card">
-                <h2>大屏显示</h2>
-                <p>用于显示所有评委的评分和最终结果</p>
-                <a href="display.html" class="btn btn-display">进入大屏</a>
-            </div>
+ <div class="role-selection">
+    <div class="role-card">
+        <h2>评委入口</h2>
+        <p>如果您是评委，请选择您的评委编号并进入评分界面</p>
+        <div class="judge-selection">
+            <select id="judge-id">
+                <!-- 动态生成评委选项 -->
+            </select>
         </div>
+        <button class="btn" id="show-judge-selection">我是评委</button>
+        <a href="#" class="btn" id="enter-judge" style="display: none;">进入评分</a>
     </div>
+    
+    <div class="role-card">
+        <h2>大屏显示</h2>
+        <p>用于显示所有评委的评分和最终结果</p>
+        <a href="display.html" class="btn btn-display">进入大屏</a>
+    </div>
+    
+    <div class="role-card">
+        <h2>成绩查看</h2>
+        <p>查看所有选手的最终得分</p>
+        <a href="all-scores.html" class="btn btn-scores">查看成绩</a>
+    </div>
+</div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -148,6 +155,20 @@
             const enterJudgeBtn = document.getElementById('enter-judge');
             const judgeIdSelect = document.getElementById('judge-id');
             
+            // 获取当前评委数量
+        fetch('/api/state')
+            .then(response => response.json())
+            .then(state => {
+                // 更新评委选择下拉框
+                judgeIdSelect.innerHTML = '';
+                for (let i = 1; i <= (state.judgeCount || 6); i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i + '号评委';
+                    judgeIdSelect.appendChild(option);
+                }
+            });
+
             showJudgeSelectionBtn.addEventListener('click', function() {
                 judgeSelection.classList.add('active');
                 showJudgeSelectionBtn.style.display = 'none';
